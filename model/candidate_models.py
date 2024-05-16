@@ -17,7 +17,6 @@ from sklearn.tree import DecisionTreeClassifier, ExtraTreeClassifier
 from typing import List, Tuple
 from sklearn.model_selection import cross_val_score,cross_validate
 import pandas as pd
-from preprocess_pipeline import PipelineBuilder
 
 #pipeline = PipelineBuilder()
 
@@ -33,13 +32,13 @@ def get_candidate_classifiers(model_pipeline: PipelineBuilder, preprocess_pipeli
 
     decision_tree = DecisionTreeClassifier(class_weight='balanced')
     extra_decision_tree = ExtraTreeClassifier(class_weight='balanced')
-    logit_pipeline = model_pipeline.build_model_pipeline(model=logit, preprocess)
-    svc_rbf_pipeline = model_pipeline.build_model_pipeline(model=svc_rbf)
-    svc_linear_pipeline = model_pipeline.build_model_pipeline(model=svc_linear)
-    svc_poly_pipeline = model_pipeline.build_model_pipeline(model=svc_poly)
-    rfc_pipeline = model_pipeline.build_model_pipeline(model=rfc)
-    decision_tree_pipeline = model_pipeline.build_model_pipeline(model=decision_tree)
-    extra_decision_tree_pipeline = model_pipeline.build_model_pipeline(model=extra_decision_tree)
+    logit_pipeline = model_pipeline.build_model_pipeline(model=logit, preprocess_pipeline=preprocess_pipeline)
+    svc_rbf_pipeline = model_pipeline.build_model_pipeline(model=svc_rbf, preprocess_pipeline=preprocess_pipeline)
+    svc_linear_pipeline = model_pipeline.build_model_pipeline(model=svc_linear, preprocess_pipeline=preprocess_pipeline)
+    svc_poly_pipeline = model_pipeline.build_model_pipeline(model=svc_poly, preprocess_pipeline=preprocess_pipeline)
+    rfc_pipeline = model_pipeline.build_model_pipeline(model=rfc, preprocess_pipeline=preprocess_pipeline)
+    decision_tree_pipeline = model_pipeline.build_model_pipeline(model=decision_tree, preprocess_pipeline=preprocess_pipeline)
+    extra_decision_tree_pipeline = model_pipeline.build_model_pipeline(model=extra_decision_tree, preprocess_pipeline=preprocess_pipeline)
 
     candidate_classifiers = {"Extra decision tree": extra_decision_tree_pipeline,
                             "Decision tree": decision_tree_pipeline,

@@ -53,7 +53,8 @@ model = Model(training_features=X_train,
               training_target_variable=y_train,
               model_pipeline=model_pipeline,
               test_features=X_test,
-              test_target_variable=y_test
+              test_target_variable=y_test,
+              metric="f1"
               )
 
 #%%
@@ -83,16 +84,18 @@ report_df = pd.DataFrame(class_report).transpose().iloc[:2,:]#.rename(index={0: 
 report_df.rename(index={'0': 'down', '1': 'up'})
 
 #%%
-classifiers = get_candidate_classifiers(pipeline=pipeline)
+classifiers = get_candidate_classifiers(model_pipeline=pipeline,
+                                        preprocess_pipeline=preprocess_pp
+                                        )
 
 #%% save model 
 
-model.save_model(filename=args.model_store_path)
+#model.save_model(filename=args.model_store_path)
 
 
 #%%# Automate evaluation of various classifiers
 
-classifiers_result = model.run_classifiers()
+classifiers_result = model.run_classifiers(estimators=classifiers)
 
 #%%
 
