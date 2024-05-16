@@ -6,30 +6,55 @@ from model.model_train import Model
 from data.data_split import split_data
 import pandas as pd
 from model.preprocess_pipeline import PipelineBuilder
-
-
+from model.candidate_models import get_candidate_classifiers
 
 #%% get data path
 datapath = get_data_path(folder_name='crypto_competition', file_name='train.csv')
 
 data = pd.read_csv(datapath)
 
+#%%
+
+data.describe()
+
+#%%
+data.iloc[:,0:10].describe()
+
+#%%
+data.iloc[:,10:20].describe()
+
+#%%
+
+mask = data.isnull().any()
+
+no_missing_cl = data.columns[~mask]
+no_missing_data_features = no_missing_cl[1:5]
+
 #%% split data
 
-X_train, X_test, y_train, y_test = split_data(data=data_target_variable_transformed, 
-                                              features=args.selected_predictors,
-                                              target=args.target_variable_transformed
+X_train, X_test, y_train, y_test = split_data(data=data, 
+                                              features=no_missing_data_features,
+                                              target=["Target"],
+                                              random_state=2024,
                                             )
 
-#%% model 
+#%%
+pipeline = PipelineBuilder(num_features=no_missing_data_features,
+                           categorical_features=None
+                           )
 
 #%%
-pipeline = PipelineBuilder()
-
-model_pipeline = pipeline.build_model_pipeline()
+preprocess_pp = pipeline.build_data_preprocess_pipeline()
+#%%
+model_pipeline = pipeline.build_model_pipeline(preprocess_pipeline=preprocess_pp)
 
 #%%
-model = Model(training_features=X_train, training_target_variable=y_train,)
+model = Model(training_features=X_train, 
+              training_target_variable=y_train,
+              model_pipeline=model_pipeline,
+              test_features=X_test,
+              test_target_variable=y_test
+              )
 
 #%%
 model.model_fit()
@@ -55,9 +80,10 @@ class_report = model.model_report
 report_df = pd.DataFrame(class_report).transpose().iloc[:2,:]#.rename(index={0: 'not_pass', 1: 'pass'})
 
 #%%
-report_df.rename(index={'0': 'not_pass', '1': 'pass'})
+report_df.rename(index={'0': 'down', '1': 'up'})
 
-
+#%%
+classifiers = get_candidate_classifiers(pipeline=pipeline)
 
 #%% save model 
 

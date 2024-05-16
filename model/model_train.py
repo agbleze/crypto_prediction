@@ -38,9 +38,9 @@ class Model(object):
         if not model_pipeline:
             model_pipeline = self.model_pipeline
         
-        self.model_fitted = self.model_pipeline.fit(self.training_features, 
-                                                    self.training_target_variable
-                                                    )
+        self.model_fitted = model_pipeline.fit(self.training_features, 
+                                                self.training_target_variable
+                                            )
         return self.model_fitted
       
     
@@ -154,8 +154,10 @@ class Model(object):
                 'boxplot_classifiers_score_time': score_time_fig
                 }
         
-    def get_best_model_name(self, models_fit_df = None, colname_for_models: str = 'model', 
-                   colname_for_score: str = 'test_score') -> str:
+    def get_best_model_name(self, models_fit_df = None, 
+                            colname_for_models: str = 'model', 
+                            colname_for_score: str = 'test_score'
+                            ) -> str:
             """Accepts data for models and test score and returns the name of best model detected after cross validation made from running 
                 from running all candidate models
 
@@ -181,7 +183,7 @@ class Model(object):
             return best_model_name
 
     @property
-    def best_model_fitted(self, candidate_models = candidate_classifiers):
+    def best_model_fitted(self, candidate_models):# = candidate_classifiers):
         """Retrieves best candidate model pipeline and fit on data
         
         Returns:
