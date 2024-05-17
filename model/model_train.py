@@ -105,7 +105,7 @@ class Model(object):
                                      y=self.training_target_variable, 
                                      cv=self.cv,
                                     scoring=self.metric,
-                                    return_train_score=False
+                                    return_train_score=False,
                                     )
             test_score_dict = {'model': model_name, 'test_score': score['test_score']}
             fit_time_dict = {'model': model_name, 'fit_time': score['fit_time']}
@@ -182,7 +182,7 @@ class Model(object):
                                )
             return best_model_name
 
-    @property
+    #@property
     def best_model_fitted(self, candidate_models):# = candidate_classifiers):
         """Retrieves best candidate model pipeline and fit on data
         

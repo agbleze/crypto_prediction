@@ -10,8 +10,14 @@ from model.candidate_models import get_candidate_classifiers
 
 #%% get data path
 datapath = get_data_path(folder_name='crypto_competition', file_name='train.csv')
+testdata_path = get_data_path(folder_name="crypto_competition", file_name="test.csv")
+
+soln_path = get_data_path(folder_name="crypto_competition", file_name="solution_format.csv")
 
 data = pd.read_csv(datapath)
+test_data = pd.read_csv(testdata_path)
+soln_data = pd.read_csv(soln_path)
+
 
 #%%
 
@@ -94,8 +100,16 @@ classifiers = get_candidate_classifiers(model_pipeline=pipeline,
 
 
 #%%# Automate evaluation of various classifiers
+X = data[no_missing_data_features]
+y = data["Target"]
 
-classifiers_result = model.run_classifiers(estimators=classifiers)
+model_cv = Model(training_features=X, 
+                 training_target_variable=y,
+                  metric="f1", cv=20,
+                  model_pipeline=model_pipeline
+                  )
+#%%
+classifiers_result = model_cv.run_classifiers(estimators=classifiers)
 
 #%%
 
@@ -112,7 +126,7 @@ classifiers_score_time = classifiers_result['cv_score_time']
 
 
 #%%
-classifiers_plot = model.plot_classifers_cv_results()
+classifiers_plot = model_cv.plot_classifers_cv_results()
 
 #%%
 classifiers_plot.keys()
@@ -128,16 +142,16 @@ classifiers_plot['boxplot_classifiers_fit_time']
 classifiers_plot['boxplot_classifiers_score_time']
 
 #%%
-model.get_best_model_name()
+model_cv.get_best_model_name()
 
 #%%
 #model.fit_best_candidate_model()
 
-model.best_model_fitted
+model_cv.best_model_fitted(candidate_models=classifiers)
 
 #%%
-
-model.save_best_model()
+model_path = "/home/lin/codebase/crypto_prediction/checkpoint/best_model.model"
+model_cv.save_best_model(model_path)
 
 
 #%%
@@ -147,8 +161,34 @@ data_dict = {'progress_percent': 90, 'extra_time_min': 40, 'work_rate': 'normal'
 dummy_data = pd.DataFrame(data=data_dict, index=[0])
 
 #%%
+test_data_selected_features = test_data[no_missing_data_features]
+model_cv.predict_values(test_data_selected_features)
 
-model.predict_values(dummy_data)
+#%%
+test_data["Target"] = model_cv.predict_values(test_data_selected_features)
+
+
+#%%
+submission_filename = "/home/lin/codebase/crypto_prediction/submissions/submission.csv"
+
+#%%
+test_data[["ID","Target"]].info()
+
+#%%
+test_pred_only = test_data[["ID","Target"]]
+
+#%%
+test_pred_only.to_csv(submission_filename,
+                                  index=False,
+                                  )
+
+
+
+#%%
+
+test_data.to_csv("sample_testdata.csv")
+#%%
+pd.read_csv(submission_filename).info()
 
 # %%
 
